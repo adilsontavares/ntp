@@ -7,14 +7,31 @@
 
         protected $str = '';
 
-        public function __construct($length) {
-            $this->str = str_repeat('0', $length * 8);
+        private function __construct() {}
+
+        public static function withLength($length) {
+            $packet = new Packet();
+            $packet->str = str_repeat('0', $length * 8);
+            return $packet;
+        }
+
+        public static function withData($data, $datalen) {
+            
+            $str = '';
+            for ($i = 0; $i < $datalen; $i++) {
+                $binstr = decbin(ord($data[$i]));
+                $str = $str . str_pad($binstr, 8, '0', STR_PAD_LEFT);
+            }
+            
+            $packet = new Packet();
+            $packet->str = $str;
+            return $packet;
         }
 
         public function write($start, $end, $value) {
             
             $length = $end - $start;
-            $valstr = sprintf("%0" . $length . "d", decbin($value));
+            $valstr = str_pad(decbin($value), $length, '0', STR_PAD_LEFT);
             $valstr = substr($valstr, 0, $length);
 
             for ($i = $start; $i < $end; $i++) {
@@ -24,16 +41,13 @@
 
         public function data() {
             
-            for ($i = 0; $i < strlen($this->str); $i++)
-                $this->str[$i] = rand() % 2 == 0 ? '0' : 1;
-
             $datalen = $this->datalen();
-            $data = array_fill(0, $datalen, 0);
+            $data = str_repeat(0, $datalen);
 
             for ($i = 0; $i < $datalen; $i++) {
-
                 $binstr = substr($this->str, $i * 8, 8);
-                $data[$i] = bindec($binstr);
+                $num = bindec($binstr);
+                $data[$i] = chr($num);
             }
 
             return $data;
@@ -43,7 +57,7 @@
             return $this->str;
         }
 
-        public function debug($bytesPerLine) {
+        public function debug($bytesPerLine = 4) {
 
             $data = $this->data();
             $datalen = $this->datalen();
@@ -64,7 +78,7 @@
             for ($i = 0; $i < $datalen; $i++) {
 
                 echo '|';
-                $binstr = sprintf("%08d", decbin($data[$i]));
+                $binstr = str_pad(decbin(ord($data[$i])), 8, '0', STR_PAD_LEFT);
 
                 for ($k = 0; $k < strlen($binstr); $k++) {
                     if ($binstr[$k] == '1') {

@@ -7,26 +7,31 @@
     $url = $argv[1];
     $port = 123;
 
-    send($url, $port);
+    send($sock, $url, $port);
+    receive($sock, $url, $port);
 
-    function send($url, $port) {
+    function send(&$sock, $url, $port) {
 
         $version = 4;
         $mode = 3;
 
-        $packet = new Packet(48);
+        $packet = Packet::withLength(48);
         $packet->write(2, 5, $version);
         $packet->write(5, 8, $mode);
-        $packet->debug(4);
+        $packet->debug();
 
         $data = $packet->data();
-        $datalen = $packet->datalen();
 
-        // echo $packet->representation() . "\n";
+        $sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+        socket_connect($sock, $url, $port) or die('Could not connect to host.');
+        socket_send($sock, $data, strlen($data), 0);
+    }
 
-        // $sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
-        // $res = socket_sendto($sock, $data, $datalen, 0x100, $url, $port);
+    function receive(&$sock, $url, $port) {
 
-        // return $res !== FALSE;
+        socket_recv($sock, $data, 48, MSG_WAITALL);
+        socket_close($sock);
+        $packet = Packet::withData($data, 48);
+        $packet->debug();
     }
 ?>
