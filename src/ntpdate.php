@@ -53,8 +53,9 @@
         $packet = Packet::withData($data, 48);
         $packet->debug();
 
+        $offset = 2208988800;
         $res = unpack("N12", $packet->data());
-        $t2 = (double)$res[9] + 1.0 / (double)$res[10];
-        $t3 = (double)$res[11] + 1.0 / (double)$res[12];
+        $t2 = $res[9] - $offset;
+        $t3 = $res[11] - $offset;
     }
 ?>
