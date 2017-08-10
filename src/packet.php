@@ -24,6 +24,9 @@
 
         public function data() {
             
+            for ($i = 0; $i < strlen($this->str); $i++)
+                $this->str[$i] = rand() % 2 == 0 ? '0' : 1;
+
             $datalen = $this->datalen();
             $data = array_fill(0, $datalen, 0);
 
@@ -65,9 +68,9 @@
 
                 for ($k = 0; $k < strlen($binstr); $k++) {
                     if ($binstr[$k] == '1') {
-                        echo Color::set('1', 'bold');
+                        echo Color::set('1', 'blue');
                     } else {
-                        echo Color::set('0', 'off');
+                        echo '0';
                     }
                 }
                 
