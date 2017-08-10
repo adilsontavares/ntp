@@ -4,7 +4,8 @@
 
     // Unsure there is a HOST parameter
     $argc == 2 or die('USAGE: <HOST>');
-    $host = $argv[1];
+    $domain = $argv[1];
+    $host = gethostbyname($domain);
     $port = 123;
 
     $request = create_request();
@@ -78,7 +79,7 @@
 
     function print_debug() {
 
-        global $t1, $t2, $t3, $t4, $offset, $delay, $stratum, $host, $request, $response;
+        global $t1, $t2, $t3, $t4, $offset, $delay, $stratum, $host, $request, $response, $domain;
 
         echo "\n";
         echo "PACKET REQUEST:\n";
@@ -88,6 +89,10 @@
         $response->debug();
 
         echo "DATA:\n\n";
+
+        echo "Domain: $domain\n";
+        echo "Host:   $host\n";
+        echo "\n";
 
         echo "T1: $t1\n";
         echo "T2: $t2\n";
