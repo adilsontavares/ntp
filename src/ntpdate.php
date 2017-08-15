@@ -57,12 +57,11 @@
 
         global $t1, $t2, $t3, $t4, $stratum, $offset, $delay;
 
-        $res = unpack("N12", $packet->data());
+        $res = unpack("C4header/N11body", $packet->data());
 
-        $t2 = timestamp_to_sec($res[9], $res[10]);
-        $t3 = timestamp_to_sec($res[11], $res[12]);
-
-        $stratum = unpack("C2", $packet->data())[2];
+        $stratum = $res["header2"];
+        $t2 = timestamp_to_sec($res["body8"], $res["body9"]);
+        $t3 = timestamp_to_sec($res["body10"], $res["body11"]);
 
         $offset = (($t2 - $t1) + ($t3 - $t4)) * 0.5;
         $delay = (($t4 - $t1) - ($t3 - $t2)) * 0.5;
